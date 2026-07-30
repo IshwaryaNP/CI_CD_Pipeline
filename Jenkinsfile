@@ -1,66 +1,31 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER = 'C:\\Users\\Ishwarya\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
+    }
+
     stages {
-
-        stage('Debug Environment') {
+        stage('Docker Version') {
             steps {
-                bat '''
-                echo ===== Current User =====
-                whoami
-
-                echo.
-                echo ===== Current Directory =====
-                cd
-
-                echo.
-                echo ===== PATH =====
-                echo %PATH%
-
-                echo.
-                echo ===== Docker Location =====
-                where docker
-
-                echo.
-                echo ===== Docker Version =====
-                docker --version
-
-                echo.
-                echo ===== Docker Info =====
-                docker info
-                '''
+                bat '"%DOCKER%" --version'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat '''
-                docker build --no-cache -t vite-app .
-                '''
+                bat '"%DOCKER%" build --no-cache -t vite-app .'
             }
         }
 
         stage('Deploy Container') {
             steps {
                 bat '''
-                docker stop vite-container 2>nul
-                docker rm vite-container 2>nul
-
-                docker run -d -p 8081:80 --name vite-container vite-app
+                "%DOCKER%" stop vite-container
+                "%DOCKER%" rm vite-container
+                "%DOCKER%" run -d -p 8081:80 --name vite-container vite-app
                 '''
             }
-        }
-    }
-
-    post {
-        always {
-            echo "Pipeline Finished"
-        }
-        success {
-            echo "Docker image built and container deployed successfully."
-        }
-        failure {
-            echo "Pipeline failed. Check the debug output above."
         }
     }
 }
