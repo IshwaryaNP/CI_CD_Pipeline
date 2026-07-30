@@ -21,6 +21,7 @@ function App() {
         }}
       >
         Welcome To Ethnotech  and my website
+        Swathi is happy to here
       </h1> 
     </div>
   );
